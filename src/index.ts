@@ -1,9 +1,9 @@
 import {
   getResult,
-  OpponentMoveIdentifier,
-  opponentMoves,
-  PlayerMoveIdentifier,
-  playerMoves,
+  getMoveByCode,
+  moves,
+  MoveIdentifier,
+  PlayerResultCode,
 } from "./moves.js";
 import { getLineReader } from "./reader.js";
 
@@ -20,13 +20,23 @@ const DRAW = 3;
 let totalScore = 0;
 
 lineReader.on("line", (line) => {
-  const [oMove, pMove] = line.split(" ");
+  const [oMove, pResult] = line.split(" ");
 
-  const playerMove = playerMoves.get(pMove as PlayerMoveIdentifier);
-  const opponentMove = opponentMoves.get(oMove as OpponentMoveIdentifier);
+  const opponentMove = moves.get(oMove as MoveIdentifier);
 
-  if (!playerMove || !opponentMove) {
+  if (!opponentMove) {
     throw new Error("Invalid move was used");
+  }
+
+  const playerCodedMove = getMoveByCode({
+    opponentMove: opponentMove.index,
+    desiredResult: pResult as PlayerResultCode,
+  });
+
+  const playerMove = moves.get(playerCodedMove as MoveIdentifier);
+
+  if (!playerMove) {
+    throw new Error("Failed to identify players move");
   }
 
   const result = getResult({

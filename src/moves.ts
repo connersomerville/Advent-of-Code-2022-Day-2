@@ -20,19 +20,42 @@ type Move = {
   value: number;
 };
 
-export type OpponentMoveIdentifier = "A" | "B" | "C";
-export const opponentMoves = new Map<OpponentMoveIdentifier, Move>([
+export type MoveIdentifier = "A" | "B" | "C";
+export const moves = new Map<MoveIdentifier, Move>([
   ["A", ROCK],
   ["B", PAPER],
   ["C", SCISSORS],
 ]);
 
-export type PlayerMoveIdentifier = "X" | "Y" | "Z";
-export const playerMoves = new Map<PlayerMoveIdentifier, Move>([
-  ["X", ROCK],
-  ["Y", PAPER],
-  ["Z", SCISSORS],
-]);
+export type PlayerResultCode = "X" | "Y" | "Z";
+type GetMoveByCode = {
+  opponentMove: number;
+  desiredResult: PlayerResultCode;
+};
+const MOVE_MATRIX = [
+  // WIN DRAW LOSE
+  ["B", "A", "C"], // OPPONENT IS ROCK
+  ["C", "B", "A"], // OPPONENT IS PAPER
+  ["A", "C", "B"], // OPPONENT IS SCISSORS
+];
+export const getMoveByCode = ({
+  opponentMove,
+  desiredResult,
+}: GetMoveByCode) => {
+  let desiredResultIdx = 0;
+
+  if (desiredResult === "X") {
+    desiredResultIdx = 2;
+  }
+  if (desiredResult === "Y") {
+    desiredResultIdx = 1;
+  }
+  if (desiredResult === "Z") {
+    desiredResultIdx = 0;
+  }
+
+  return MOVE_MATRIX[opponentMove][desiredResultIdx];
+};
 
 type GetResult = {
   playerMove: number;
